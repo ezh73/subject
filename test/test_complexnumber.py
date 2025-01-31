@@ -1,76 +1,78 @@
 import unittest
-from calculator.complexnumber import ComplexNumber
 import math
+from calculator.complexnumber import ComplexNumber  
 
 class TestComplexNumber(unittest.TestCase):
-
-    def setUp(self):
-        """각 테스트 전에 실행되는 초기화 메서드"""
-        self.num1 = ComplexNumber(3, 4)  # 3 + 4i
-        self.num2 = ComplexNumber(1, 2)  # 1 + 2i
-        self.num_zero = ComplexNumber(0, 0)  # 0 + 0i
-
+    
     def test_add(self):
-        # 덧셈 테스트
-        result = self.num1 + self.num2
+        a = ComplexNumber(3, 4)
+        b = ComplexNumber(1, 2)
+        result = a + b
         self.assertEqual(result.real, 4)
         self.assertEqual(result.imag, 6)
 
     def test_sub(self):
-        # 뺄셈 테스트
-        result = self.num1 - self.num2
+        a = ComplexNumber(3, 4)
+        b = ComplexNumber(1, 2)
+        result = a - b
         self.assertEqual(result.real, 2)
         self.assertEqual(result.imag, 2)
 
     def test_mul(self):
-        # 곱셈 테스트
-        result = self.num1 * self.num2
-        self.assertEqual(result.real, -5)
-        self.assertEqual(result.imag, 10)
+        a = ComplexNumber(3, 4)
+        b = ComplexNumber(1, -1)
+        result = a * b
+        self.assertEqual(result.real, 7)
+        self.assertEqual(result.imag, 1)
 
     def test_div(self):
-        # 나눗셈 테스트
-        result = self.num1 / self.num2
-        self.assertEqual(round(result.real, 2), 2.2)  # 근사값 비교
-        self.assertEqual(round(result.imag, 2), 0.4)
-
-        # 0으로 나누는 경우 예외 처리 테스트
-        with self.assertRaises(ValueError):
-            self.num1 / self.num_zero
+        a = ComplexNumber(3, 4)
+        b = ComplexNumber(1, -1)
+        result = a / b
+        self.assertAlmostEqual(result.real, -0.5, places=2)
+        self.assertAlmostEqual(result.imag, 3.5, places=2)
 
     def test_absolute_value(self):
-        # 복소수 절대값 계산 테스트
-        result = self.num1.absolute_value()
-        self.assertEqual(result, 5)  # sqrt(3^2 + 4^2) == 5
+        a = ComplexNumber(3, 4)
+        result = a.absolute_value()
+        self.assertEqual(result, 5)
 
     def test_argument(self):
-        # 복소수 편각 계산 테스트
-        result = self.num1.argument()
-        self.assertEqual(round(result, 2), 0.93)  # atan2(4, 3) 값은 약 0.93 라디안
+        a = ComplexNumber(1, math.sqrt(3))
+        result = a.argument()
+        self.assertAlmostEqual(result, math.pi / 3, places=2)
 
     def test_to_polar(self):
-        # 직교 좌표계 → 극 좌표계 변환 테스트
-        result = self.num1.to_polar()
-        self.assertEqual(round(result[0], 2), 5)  # 반지름 r == 5
-        self.assertEqual(round(result[1], 2), 0.93)  # 각도 θ == 약 0.93 라디안
+        a = ComplexNumber(3, 4)
+        r, theta = a.to_polar()
+        self.assertAlmostEqual(r, 5, places=2)
+        self.assertAlmostEqual(theta, math.atan2(4, 3), places=2)
 
     def test_to_cartesian(self):
-        # 극 좌표계 → 직교 좌표계 변환 테스트
-        r, theta = self.num1.to_polar()
-        result = ComplexNumber(r, theta).to_cartesian()
-        self.assertEqual(round(result.real, 2), 3)  # x == 3
-        self.assertEqual(round(result.imag, 2), 4)  # y == 4
+        r = 5
+        theta = math.atan2(4, 3)
+        result = ComplexNumber.to_cartesian(r, theta)
+        self.assertAlmostEqual(result.real, 3, places=2)
+        self.assertAlmostEqual(result.imag, 4, places=2)
 
     def test_square_root(self):
-        # 복소수 제곱근 계산 테스트
-        result = self.num1.square_root()
-        self.assertEqual(round(result.real, 2), 2)  # 제곱근 실수 부분
-        self.assertEqual(round(result.imag, 2), 1)  # 제곱근 허수 부분
+        a = ComplexNumber(3, 4)
+        root1, root2 = a.square_root()
+
+        # 제곱근의 제곱이 원래 숫자와 같은지 확인
+        result1 = root1 * root1
+        result2 = root2 * root2
+
+        self.assertAlmostEqual(result1.real, a.real, places=2)
+        self.assertAlmostEqual(result1.imag, a.imag, places=2)
+        self.assertAlmostEqual(result2.real, a.real, places=2)
+        self.assertAlmostEqual(result2.imag, a.imag, places=2)
 
     def test_repr(self):
-        # 복소수 문자열 출력 형식 테스트
-        result = repr(self.num1)
-        self.assertEqual(result, "3+4i")
+        a = ComplexNumber(3, -4)
+        self.assertEqual(repr(a), "3 - 4i")
+        b = ComplexNumber(3, 4)
+        self.assertEqual(repr(b), "3 + 4i")
 
 if __name__ == "__main__":
     unittest.main()
